@@ -1,0 +1,75 @@
+{
+    "name": "Main",
+    "parameters": {},
+    "services": {},
+    "settings": {
+        "auto_eviction": false,
+        "data_passing_memory_size": "1GB"
+    },
+    "steps": {
+        "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "generate_et_cureves.ipynb",
+            "incoming_connections": [
+                "deb9d9fe-851c-4893-8027-6059f5e277ab"
+            ],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    399.5,
+                    80
+                ]
+            },
+            "parameters": {},
+            "title": "generate et cureves",
+            "uuid": "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c"
+        },
+        "61be3b20-5eda-4ed2-8b75-d77e1673f561": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "anomalies_from_et_curves",
+            "incoming_connections": [
+                "deb9d9fe-851c-4893-8027-6059f5e277ab",
+                "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c"
+            ],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    677.5,
+                    318
+                ]
+            },
+            "parameters": {},
+            "title": "anomalies from et curves",
+            "uuid": "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+        },
+        "deb9d9fe-851c-4893-8027-6059f5e277ab": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "get_data_from_clarify.py",
+            "incoming_connections": [],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    20,
+                    80.00000000000001
+                ]
+            },
+            "parameters": {},
+            "title": "get data from clarify",
+            "uuid": "deb9d9fe-851c-4893-8027-6059f5e277ab"
+        }
+    },
+    "uuid": "d27bd72e-f4bd-4823-9ae8-63d891f28fc4",
+    "version": "1.0.0"
+}
