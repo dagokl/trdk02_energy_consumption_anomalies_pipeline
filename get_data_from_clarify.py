@@ -1,3 +1,4 @@
+from email.errors import InvalidMultipartContentTransferEncodingDefect
 import orchest
 from pyclarify import ClarifyClient
 import pandas as pd
@@ -43,35 +44,41 @@ response = clarify_client.select_items_metadata(
 )
 signal_infos_dict = response.result.items
 
-sensor_types_to_add = ['Fastkraft', 'Fjernvarme', 'Varme', 'Elkjel', 'Kjøling']
+energy_consumption_sensor_types = ['Fastkraft', 'Fjernvarme', 'Varme', 'Elkjel', 'Kjøling']
+temperature_sensor_types = ['Temperatur']
 
-item_id_dict = {}
+energy_consumption_item_id_dict = {}
+temperature_item_id_dict = {}
 for item_id, signal_info in signal_infos_dict.items():
     building_name = signal_info.labels.get('building', [None])[0]
     sensor_type = signal_info.labels.get('type', [None])[0]
+
+    # if the sensor messaures temperature add to seperate dict for temperature sensors
+    if sensor_type in temperature_sensor_types:
+        temperature_item_id_dict[signal_info.name] = item_id
 
     # if item does not have building name or sensor type as label continue to next item
     if building_name is None or sensor_type is None:
         continue
 
     # if sensor type is not in list of interseting sensor types continue to next sensor
-    if sensor_type not in sensor_types_to_add:
+    if sensor_type not in energy_consumption_sensor_types:
         continue
 
     # if building is not in item_id_dict add empty dict
-    if building_name not in item_id_dict:
-        item_id_dict[building_name] = {}
+    if building_name not in energy_consumption_item_id_dict:
+        energy_consumption_item_id_dict[building_name] = {}
 
     # if sensor type not in dict for build add empty list
-    if sensor_type not in item_id_dict[building_name]:
-        item_id_dict[building_name][sensor_type] = []
+    if sensor_type not in energy_consumption_item_id_dict[building_name]:
+        energy_consumption_item_id_dict[building_name][sensor_type] = []
 
-    item_id_dict[building_name][sensor_type].append(item_id)
+    energy_consumption_item_id_dict[building_name][sensor_type].append(item_id)
 
-    building_names = list(item_id_dict.keys())
+    building_names = list(energy_consumption_item_id_dict.keys())
 
 energy_consumption_hourly_dfs = {}
-for building_name, sensor_type_item_id_dict in item_id_dict.items():
+for building_name, sensor_type_item_id_dict in energy_consumption_item_id_dict.items():
     d = {}
     for sensor_type, item_id_list in sensor_type_item_id_dict.items():
         d[sensor_type] = data_df[item_id_list].sum(axis=1)
@@ -87,12 +94,29 @@ for building_name, df in energy_consumption_hourly_dfs.items():
     energy_consumption_daily_dfs[building_name] = df.resample('D').sum()
     energy_consumption_weekly_dfs[building_name] = df.resample('W-MON').sum()
 
+print(data_df.columns)
+print(temperature_item_id_dict)
+
+temperature_hourly_dfs = data_df[temperature_item_id_dict.values()]
+temperature_hourly_dfs.rename({y:x for x,y in temperature_item_id_dict.items()}, axis='columns', inplace=True)
+
 energy_consumption_dfs = {
     'hourly': energy_consumption_hourly_dfs,
     'daily': energy_consumption_daily_dfs,
     'weekly': energy_consumption_weekly_dfs,
 }
 
+temperature_dfs = {
+    'hourly': temperature_hourly_dfs,
+    'daily': temperature_hourly_dfs.resample('D').mean(),
+    'weekly': temperature_hourly_dfs.resample('W-MON').mean()
+}
+
+clarify_data = {
+    'energy_consumption': energy_consumption_dfs,
+    'temperature': temperature_dfs
+}
+
 print('outputting energy cosumption data fetched from clarify...')
-orchest.output(energy_consumption_dfs, name='energy_consumption')
+orchest.output(clarify_data, name='clarify_data')
 print('success')
