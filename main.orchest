@@ -9,9 +9,10 @@
     "steps": {
         "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c": {
             "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
-            "file_path": "generate_et_cureves.ipynb",
+            "file_path": "generate_et_curves.ipynb",
             "incoming_connections": [
-                "deb9d9fe-851c-4893-8027-6059f5e277ab"
+                "deb9d9fe-851c-4893-8027-6059f5e277ab",
+                "80b3d2fb-9356-4d7e-ac2e-e6c0444d8748"
             ],
             "kernel": {
                 "display_name": "Python 3",
@@ -20,12 +21,12 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    399.5,
-                    80
+                    927.8648692810457,
+                    317.3187908496734
                 ]
             },
             "parameters": {},
-            "title": "generate et cureves",
+            "title": "generate et curves",
             "uuid": "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c"
         },
         "61be3b20-5eda-4ed2-8b75-d77e1673f561": {
@@ -42,13 +43,34 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    677.5,
-                    318
+                    1264.2779198635974,
+                    610.5625888036374
                 ]
             },
             "parameters": {},
             "title": "anomalies from et curves",
             "uuid": "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+        },
+        "80b3d2fb-9356-4d7e-ac2e-e6c0444d8748": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "normalize_data.ipynb",
+            "incoming_connections": [
+                "deb9d9fe-851c-4893-8027-6059f5e277ab"
+            ],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    421.44444444444434,
+                    95.11111111111111
+                ]
+            },
+            "parameters": {},
+            "title": "normalize data",
+            "uuid": "80b3d2fb-9356-4d7e-ac2e-e6c0444d8748"
         },
         "deb9d9fe-851c-4893-8027-6059f5e277ab": {
             "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
@@ -61,8 +83,8 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    20,
-                    80.00000000000001
+                    -53,
+                    295.25
                 ]
             },
             "parameters": {},

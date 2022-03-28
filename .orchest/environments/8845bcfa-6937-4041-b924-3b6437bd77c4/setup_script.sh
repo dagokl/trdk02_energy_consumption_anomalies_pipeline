@@ -1,6 +1,6 @@
 #!/bin/bash
 
-pip install pyclarify
+pip install pyclarify kneed
 
 # Install any dependencies you have in this shell script,
 # see https://docs.orchest.io/en/latest/fundamentals/environments.html#install-packages
