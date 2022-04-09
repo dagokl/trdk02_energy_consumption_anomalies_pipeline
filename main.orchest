@@ -21,13 +21,35 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    759.3000000000002,
-                    439.6
+                    768.4285714285716,
+                    437.14285714285734
                 ]
             },
             "parameters": {},
             "title": "generate et curves",
             "uuid": "1d6aa59e-9b71-4c47-83fb-867bf28a5e2c"
+        },
+        "5e51afa8-f4af-4cf4-b4f8-a677d4f30a45": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "write_data_to_clarify.ipynb",
+            "incoming_connections": [
+                "deb9d9fe-851c-4893-8027-6059f5e277ab",
+                "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+            ],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    1532.9398163267178,
+                    418.62365972479967
+                ]
+            },
+            "parameters": {},
+            "title": "write data to clarify",
+            "uuid": "5e51afa8-f4af-4cf4-b4f8-a677d4f30a45"
         },
         "61be3b20-5eda-4ed2-8b75-d77e1673f561": {
             "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
@@ -44,8 +66,8 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    1184.5,
-                    227.29999999999995
+                    1159.4560439560437,
+                    302.5274725274726
                 ]
             },
             "parameters": {},
@@ -65,8 +87,8 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    412.30000000000007,
-                    78.00000000000006
+                    400.6428571428571,
+                    175.64285714285728
                 ]
             },
             "parameters": {},
@@ -84,8 +106,8 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    63.499999999999886,
-                    225.5
+                    122.66409266409255,
+                    376.061776061776
                 ]
             },
             "parameters": {},

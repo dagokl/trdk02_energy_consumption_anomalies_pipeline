@@ -21,7 +21,7 @@ for i in range(0, number_of_items_to_fetch, num_per_fetch):
         response = clarify_client.select_items_data(
             limit=num_per_fetch,
             skip = i,
-            not_before = "2018-01-01T00:00:00Z",
+            not_before = "2019-01-01T00:00:00Z",
             before = "2021-01-02T00:00:00Z"
         )
 
@@ -45,32 +45,39 @@ response = clarify_client.select_items_metadata(
 signal_infos_dict = response.result.items
 
 energy_consumption_sensor_types = ['Fastkraft', 'Fjernvarme', 'Varme', 'Elkjel', 'Kjøling']
-temperature_sensor_types = ['Temperatur']
+temperature_sensor_type = 'Temperatur'
 
 energy_consumption_item_id_dict = {}
 temperature_item_id_dict = {}
 for item_id, signal_info in signal_infos_dict.items():
-    building_name = signal_info.labels.get('building', [None])[0]
-    sensor_type = signal_info.labels.get('type', [None])[0]
+    building_name = signal_info.labels.get('building', [])
+    sensor_type = signal_info.labels.get('type', [])
 
     # if the sensor messaures temperature add to seperate dict for temperature sensors
-    if sensor_type in temperature_sensor_types:
+    if temperature_sensor_type in sensor_type:
+        print(f'temp: {sensor_type}')
+        print(f'{signal_info.name}')
         temperature_item_id_dict[signal_info.name] = item_id
-
-    # if item does not have building name or sensor type as label continue to next item
-    if building_name is None or sensor_type is None:
         continue
+
+    # if item does not have building name or sensor type continue to next item
+    if not building_name or not sensor_type:
+        continue
+
+    building_name = building_name[0]
 
     # if sensor type is not in list of interseting sensor types continue to next sensor
-    if sensor_type not in energy_consumption_sensor_types:
+    if set(sensor_type).isdisjoint(energy_consumption_sensor_types):
         continue
+    
+    sensor_type = sensor_type[0]
 
     # if building is not in item_id_dict add empty dict
     if building_name not in energy_consumption_item_id_dict:
         energy_consumption_item_id_dict[building_name] = {}
 
     # if sensor type not in dict for build add empty list
-    if sensor_type not in energy_consumption_item_id_dict[building_name]:
+    if set(sensor_type).isdisjoint(energy_consumption_item_id_dict[building_name]):
         energy_consumption_item_id_dict[building_name][sensor_type] = []
 
     energy_consumption_item_id_dict[building_name][sensor_type].append(item_id)
@@ -87,6 +94,17 @@ for building_name, sensor_type_item_id_dict in energy_consumption_item_id_dict.i
     # add total column to dataframe
     energy_consumption_hourly_dfs[building_name]['Totalt'] = energy_consumption_hourly_dfs[building_name].sum(axis=1)
 
+print(f'number before null and nan remove: {len(energy_consumption_hourly_dfs.keys())}')
+
+# remove buildings with any null or nan values
+for building_name in list(energy_consumption_hourly_dfs.keys()):
+    if energy_consumption_hourly_dfs[building_name].isnull().values.any():
+        energy_consumption_hourly_dfs.pop(building_name)
+
+    elif energy_consumption_hourly_dfs[building_name].isna().values.any():
+        energy_consumption_hourly_dfs.pop(building_name)
+
+print(f'number after null and nan remove: {len(energy_consumption_hourly_dfs.keys())}')
 
 energy_consumption_daily_dfs = {}
 energy_consumption_weekly_dfs = {}
