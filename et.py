@@ -12,16 +12,66 @@ def linear_interpolation(x, x0, y0, x1, y1):
     return y0 + (x - x0) * slope
 
 class ET:
-    def __init__(self, dx, dy):
+    def __init__(self):
+        self.dx = None
+        self.dy = None
+        self.threshold = None
+
+    def fit(self, temperature_series, energy_consumption_series, points_per_segment) -> bool:
+        # ensure that we match values for energy and temp
+        energy_consumption_series.rename('energy', inplace=True)
+        temperature_series.rename('temperature', inplace=True)
+        df = pd.concat((energy_consumption_series, temperature_series), axis=1, ignore_index=False)
+        df.dropna(inplace=True)
+        df.reset_index(drop=True, inplace=True)
+        df.sort_values(by='temperature', inplace=True)
+
+        number_of_points = df.shape[0]
+
+        X = df['temperature'].values.reshape(number_of_points, 1)
+        y = df['energy'].values.reshape(number_of_points, 1)
+
+        dx = []
+        dy = []
+
+        for i in range(0, number_of_points, points_per_segment):
+            n = min(points_per_segment, number_of_points - i)
+
+            X_seg = X[i:i+n, :]
+            y_seg = y[i:i+n, :]
+
+            model = LinearRegression()
+            model.fit(X_seg, y_seg)
+
+            if i == 0:
+                X_first = X_seg[0].reshape(1,1)
+                y_first = model.predict(X_first)
+                dx.append(X_first[0,0])
+                dy.append(y_first[0,0])
+
+            X_middle = X_seg[n//2].reshape(1,1)
+            y_middle = model.predict(X_middle)
+            dx.append(X_middle[0,0])
+            dy.append(y_middle[0,0])
+
+            if i >= number_of_points - points_per_segment:
+                X_last = X_seg[-1].reshape(1,1)
+                y_last = model.predict(X_last)
+                dx.append(X_last[0,0])
+                dy.append(y_last[0,0])
+        
+        # ET curve must have same number of points in dx and dy
         if len(dx) != len(dy):
-            raise Exception("ET curve must have same number of points in dx and dy")
+            return False
         
+        # At least two points is required to create ET curve
         if len(dx) < 2:
-            raise Exception("At least two points is required to create ET curve")
-        
+            return False
+
         self.dx = dx
         self.dy = dy
-        self.threshold = None
+
+        return True
 
     def expected(self, temperature):
         if temperature < self.dx[0]:
@@ -107,7 +157,7 @@ class ETT:
         self.best_mse_amounts = []
         self.best_thresholds = []
 
-    def optimizer(self, energy_consumption_series, temperature_series) -> bool:
+    def fit(self, temperature_series, energy_consumption_series) -> bool:
         for day_index, day in enumerate(self.week_days):
             weekday_energy = energy_consumption_series.loc[energy_consumption_series.index.weekday == day_index]
             weekday_temp = temperature_series.loc[temperature_series.index.weekday == day_index]
@@ -116,9 +166,10 @@ class ETT:
             lines_mse = []
             for line in self.lines:
                 pps = len(weekday_energy) // line + 1
-                et = regressor(weekday_energy, weekday_temp, pps)
+                et = ET()
+                success = et.fit(weekday_temp, weekday_energy, pps)
 
-                if et is None:
+                if not success:
                     continue
 
                 lines_mse.append(et.get_mse(weekday_energy, weekday_temp))
@@ -135,7 +186,8 @@ class ETT:
             best_pps = len(weekday_energy) // best_line_amount + 1
 
             # recreate ET with best amount of lines
-            et = regressor(weekday_energy, weekday_temp, best_pps)
+            et = ET()
+            et.fit(weekday_temp, weekday_energy, best_pps)
             # get all residuals sorted in descending order
             top_diffs = et.get_top_diffs(weekday_energy, weekday_temp, len(weekday_energy))
             top_diffs.dropna(inplace=True)
@@ -208,53 +260,3 @@ class ETT:
             t = temperature_series.iloc[t_i == i]
             self.ETs[self.week_days[i]].plot(e, t)
 
-def regressor(energy_consumption_series, temperature_series, points_per_segment):
-    # ensure that we match values for energy and temp
-    energy_consumption_series.rename('energy', inplace=True)
-    temperature_series.rename('temperature', inplace=True)
-    df = pd.concat((energy_consumption_series, temperature_series), axis=1, ignore_index=False)
-    df.dropna(inplace=True)
-    df.reset_index(drop=True, inplace=True)
-    df.sort_values(by='temperature', inplace=True)
-
-    number_of_points = df.shape[0]
-
-    X = df['temperature'].values.reshape(number_of_points, 1)
-    y = df['energy'].values.reshape(number_of_points, 1)
-
-    dx = []
-    dy = []
-
-    for i in range(0, number_of_points, points_per_segment):
-        n = min(points_per_segment, number_of_points - i)
-
-        X_seg = X[i:i+n, :]
-        y_seg = y[i:i+n, :]
-
-        model = LinearRegression()
-        model.fit(X_seg, y_seg)
-
-        if i == 0:
-            X_first = X_seg[0].reshape(1,1)
-            y_first = model.predict(X_first)
-            dx.append(X_first[0,0])
-            dy.append(y_first[0,0])
-
-        X_middle = X_seg[n//2].reshape(1,1)
-        y_middle = model.predict(X_middle)
-        dx.append(X_middle[0,0])
-        dy.append(y_middle[0,0])
-
-        if i >= number_of_points - points_per_segment:
-            X_last = X_seg[-1].reshape(1,1)
-            y_last = model.predict(X_last)
-            dx.append(X_last[0,0])
-            dy.append(y_last[0,0])
-
-    et = None
-    try:
-        et = ET(dx, dy)
-    except:
-        print('failed to create valid et curve')
-
-    return et
