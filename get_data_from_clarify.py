@@ -20,8 +20,8 @@ for i in range(0, number_of_items_to_fetch, num_per_fetch):
         response = clarify_client.select_items_data(
             limit=num_per_fetch,
             skip = i,
-            not_before = "2019-01-01T00:00:00Z",
-            before = "2021-01-02T00:00:00Z"
+            not_before = "2018-01-01T00:00:00Z",
+            before = "2020-01-02T00:00:00Z"
         )
 
         if response.result == None:
@@ -92,8 +92,6 @@ for building_name, sensor_type_item_id_dict in energy_consumption_item_id_dict.i
     
     # add total column to dataframe
     energy_consumption_hourly_dfs[building_name]['Totalt'] = energy_consumption_hourly_dfs[building_name].sum(axis=1)
-
-print(f'number before null and nan remove: {len(energy_consumption_hourly_dfs.keys())}')
 
 # remove buildings with any null or nan values
 for building_name in list(energy_consumption_hourly_dfs.keys()):

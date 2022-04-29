@@ -34,7 +34,7 @@
             "file_path": "write_data_to_clarify.ipynb",
             "incoming_connections": [
                 "deb9d9fe-851c-4893-8027-6059f5e277ab",
-                "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+                "6dfdd9ed-ab94-44b0-ba40-4309993b8675"
             ],
             "kernel": {
                 "display_name": "Python 3",
@@ -43,7 +43,7 @@
             "meta_data": {
                 "hidden": false,
                 "position": [
-                    1279.473149660051,
+                    1563.473149660051,
                     385.95699305813287
                 ]
             },
@@ -73,6 +73,27 @@
             "parameters": {},
             "title": "anomalies from et curves",
             "uuid": "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+        },
+        "6dfdd9ed-ab94-44b0-ba40-4309993b8675": {
+            "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",
+            "file_path": "filter_out_anomalies.ipynb",
+            "incoming_connections": [
+                "61be3b20-5eda-4ed2-8b75-d77e1673f561"
+            ],
+            "kernel": {
+                "display_name": "Python 3",
+                "name": "python"
+            },
+            "meta_data": {
+                "hidden": false,
+                "position": [
+                    1279,
+                    227
+                ]
+            },
+            "parameters": {},
+            "title": "filter out anomalies",
+            "uuid": "6dfdd9ed-ab94-44b0-ba40-4309993b8675"
         },
         "80b3d2fb-9356-4d7e-ac2e-e6c0444d8748": {
             "environment": "8845bcfa-6937-4041-b924-3b6437bd77c4",

@@ -6,6 +6,7 @@ import numpy as np
 from kneed import KneeLocator
 from utils import Anomaly
 from datetime import timedelta
+import numpy as np
 
 def linear_interpolation(x, x0, y0, x1, y1):
     slope = (y1 - y0) / (x1 - x0)
@@ -103,8 +104,10 @@ class ET:
         anomalies = []
 
         for anomaly_start in anomalies_series.index:
+            expected = abs(self.expected(temperature_series[anomaly_start]))
+            intensity = (energy_series[anomaly_start] - expected) / expected
             anomaly_end = anomaly_start + timedelta(days=1)
-            anomaly = Anomaly(building_name, anomaly_start, anomaly_end)
+            anomaly = Anomaly(building_name, anomaly_start, anomaly_end, intensity)
             anomalies.append(anomaly)
         
         print(f'anomalies_series len: {len(anomalies_series)}\n anomalies len: {len(anomalies)}')
@@ -243,11 +246,11 @@ class ETT:
         anomalies = []
 
         for anomaly_start in anomalies_series.index:
+            expected = abs(self.expected(temperature_series[anomaly_start], self.week_days[anomaly_start.dayofweek]))
+            intensity = abs((energy_series[anomaly_start] - expected) / expected)
             anomaly_end = anomaly_start + timedelta(days=1)
-            anomaly = Anomaly(building_name, anomaly_start, anomaly_end)
+            anomaly = Anomaly(building_name, anomaly_start, anomaly_end, intensity)
             anomalies.append(anomaly)
-        
-        # print(f'anomalies_series len: {len(anomalies_series)}\n anomalies len: {len(anomalies)}')
 
         return anomalies
     
@@ -259,4 +262,3 @@ class ETT:
             e = energy_series.iloc[e_i == i]
             t = temperature_series.iloc[t_i == i]
             self.ETs[self.week_days[i]].plot(e, t)
-
